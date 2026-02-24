@@ -3,6 +3,12 @@
   "module": "src/index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "test": "bun test",
+    "build": "bun build src/index.ts --compile --outfile claude-dotfiles",
+    "link": "bun link"
+  },
   "bin": {
     "claude-dotfiles": "src/index.ts"
   },
