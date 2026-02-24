@@ -22,6 +22,9 @@ export function generateManifest(scan: ScanResult, meta: ManifestMeta): Manifest
   if (scan.skills.length > 0) {
     components.skills = { include: true, dir: "skills/" };
   }
+  if (scan.pluginSkills.length > 0) {
+    components.pluginSkills = { include: true, file: "plugin-skills.json" };
+  }
   if (scan.claudeMdFiles.length > 0) {
     components.claudeMd = { include: true, dir: "claude-md/" };
   }

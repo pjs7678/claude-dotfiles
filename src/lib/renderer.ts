@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import type { Manifest, PluginEntry } from "../types";
+import type { Manifest, PluginEntry, PluginSkillGroup } from "../types";
 
 export function renderManifest(manifest: Manifest): string {
   const lines: string[] = [];
@@ -17,6 +17,7 @@ export function renderManifest(manifest: Manifest): string {
   if (c.settings?.include) lines.push(`    ${chalk.green("+")} Settings     ${chalk.dim(c.settings.file)}`);
   if (c.permissions?.include) lines.push(`    ${chalk.green("+")} Permissions  ${chalk.dim(c.permissions.file)}`);
   if (c.skills?.include) lines.push(`    ${chalk.green("+")} Skills       ${chalk.dim(c.skills.dir)}`);
+  if (c.pluginSkills?.include) lines.push(`    ${chalk.green("+")} Plugin Skills ${chalk.dim(c.pluginSkills.file)}`);
   if (c.claudeMd?.include) lines.push(`    ${chalk.green("+")} CLAUDE.md    ${chalk.dim(c.claudeMd.dir)}`);
 
   return lines.join("\n");
@@ -39,6 +40,18 @@ export function renderDiff(label: string, added: string[], existing: string[]): 
   lines.push(chalk.dim(`    ${existing.length} already installed, ${added.length} new`));
   for (const item of added) {
     lines.push(`    ${chalk.green("+")} ${item}`);
+  }
+  return lines.join("\n");
+}
+
+export function renderPluginSkills(groups: PluginSkillGroup[]): string {
+  const lines: string[] = [];
+  lines.push(chalk.bold("  Plugin Skills:"));
+  for (const group of groups) {
+    lines.push(`    ${chalk.cyan(group.plugin)} ${chalk.dim(`(${group.marketplace} v${group.version})`)}`);
+    for (const skill of group.skills) {
+      lines.push(`      ${chalk.white(skill.name)} ${chalk.dim("—")} ${chalk.dim(skill.description)}`);
+    }
   }
   return lines.join("\n");
 }

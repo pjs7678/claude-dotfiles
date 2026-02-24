@@ -4,9 +4,9 @@ import { homedir } from "os";
 import { join } from "path";
 import { fetchManifest, fetchFile } from "../lib/github";
 import { validateManifest } from "../lib/manifest";
-import { renderManifest, renderPluginList } from "../lib/renderer";
+import { renderManifest, renderPluginList, renderPluginSkills } from "../lib/renderer";
 import { scanClaudeDir } from "../lib/scanner";
-import type { PluginEntry } from "../types";
+import type { PluginEntry, PluginSkillGroup } from "../types";
 
 export const showCommand = new Command("show")
   .description("Preview a Claude Code setup from GitHub")
@@ -34,6 +34,13 @@ export const showCommand = new Command("show")
       const localNames = local.plugins.map((p) => `${p.name}@${p.marketplace}`);
 
       console.log(renderPluginList(remotePlugins, localNames));
+      console.log("");
+    }
+
+    if (manifest.components.pluginSkills?.include) {
+      const pluginSkillsJson = await fetchFile(repo, manifest.components.pluginSkills.file);
+      const pluginSkills: PluginSkillGroup[] = JSON.parse(pluginSkillsJson);
+      console.log(renderPluginSkills(pluginSkills));
       console.log("");
     }
 

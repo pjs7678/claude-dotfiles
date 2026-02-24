@@ -10,6 +10,7 @@ describe("generateManifest", () => {
       plugins: [{ name: "superpowers", marketplace: "official", version: "4.3.1" }],
       skills: ["my-skill"],
       claudeMdFiles: [],
+      pluginSkills: [],
     };
     const manifest = generateManifest(scan, {
       name: "test setup",
@@ -31,6 +32,7 @@ describe("generateManifest", () => {
       plugins: [],
       skills: [],
       claudeMdFiles: [],
+      pluginSkills: [],
     };
     const manifest = generateManifest(scan, {
       name: "empty",
@@ -41,6 +43,33 @@ describe("generateManifest", () => {
     expect(manifest.components.plugins).toBeUndefined();
     expect(manifest.components.settings).toBeUndefined();
     expect(manifest.components.skills).toBeUndefined();
+    expect(manifest.components.pluginSkills).toBeUndefined();
+  });
+
+  test("includes pluginSkills component when plugin skills found", () => {
+    const scan: ScanResult = {
+      settings: null,
+      permissions: null,
+      plugins: [{ name: "superpowers", marketplace: "official", version: "4.3.1" }],
+      skills: [],
+      claudeMdFiles: [],
+      pluginSkills: [
+        {
+          plugin: "superpowers",
+          marketplace: "official",
+          version: "4.3.1",
+          skills: [{ name: "brainstorming", description: "creative work" }],
+        },
+      ],
+    };
+    const manifest = generateManifest(scan, {
+      name: "test",
+      description: "test",
+      author: "tester",
+      tags: [],
+    });
+    expect(manifest.components.pluginSkills?.include).toBe(true);
+    expect(manifest.components.pluginSkills?.file).toBe("plugin-skills.json");
   });
 });
 

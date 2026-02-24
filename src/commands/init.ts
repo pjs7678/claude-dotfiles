@@ -39,6 +39,16 @@ export const initCommand = new Command("init")
         console.log(`      ${chalk.dim("-")} ${s}`);
       }
     }
+    if (scan.pluginSkills.length > 0) {
+      const totalSkills = scan.pluginSkills.reduce((sum, g) => sum + g.skills.length, 0);
+      console.log(`    ${chalk.green("+")} Plugin Skills (${totalSkills} from ${scan.pluginSkills.length} plugins)`);
+      for (const group of scan.pluginSkills) {
+        console.log(`      ${chalk.dim(group.plugin)} (${group.skills.length} skills)`);
+        for (const skill of group.skills) {
+          console.log(`        ${chalk.dim("-")} ${skill.name}`);
+        }
+      }
+    }
     console.log("");
 
     if (scan.settings) {
@@ -109,6 +119,10 @@ export const initCommand = new Command("init")
       }
     }
 
+    if (scan.pluginSkills.length > 0) {
+      await writeFile(join(outputDir, "plugin-skills.json"), JSON.stringify(scan.pluginSkills, null, 2));
+    }
+
     const readme = generateReadme(manifest, scan);
     await writeFile(join(outputDir, "README.md"), readme);
 
@@ -158,6 +172,19 @@ function generateReadme(manifest: Manifest, scan: ScanResult): string {
       lines.push(`- ${s}`);
     }
     lines.push("");
+  }
+
+  if (scan.pluginSkills.length > 0) {
+    lines.push("### Plugin Skills");
+    lines.push("");
+    for (const group of scan.pluginSkills) {
+      lines.push(`#### ${group.plugin} (${group.marketplace} v${group.version})`);
+      lines.push("");
+      for (const skill of group.skills) {
+        lines.push(`- **${skill.name}** — ${skill.description}`);
+      }
+      lines.push("");
+    }
   }
 
   if (manifest.components.settings?.include) {
