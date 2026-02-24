@@ -14,6 +14,10 @@ export const initCommand = new Command("init")
   .description("Export your current Claude Code setup")
   .option("-o, --output <dir>", "Output directory", ".")
   .option("--claude-dir <dir>", "Claude config directory", join(homedir(), ".claude"))
+  .option("-n, --name <name>", "Setup name (skip prompt)")
+  .option("-d, --description <desc>", "Description (skip prompt)")
+  .option("-a, --author <author>", "Author (skip prompt)")
+  .option("-t, --tags <tags>", "Comma-separated tags (skip prompt)")
   .action(async (opts) => {
     const claudeDir = opts.claudeDir;
     const outputDir = opts.output;
@@ -48,21 +52,30 @@ export const initCommand = new Command("init")
       }
     }
 
-    const readline = await import("readline");
-    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-    const ask = (q: string): Promise<string> =>
-      new Promise((res) => rl.question(q, res));
+    let name: string;
+    let description: string;
+    let author: string;
+    let tags: string[];
 
-    const name = await ask(chalk.bold("  Setup name: "));
-    const description = await ask(chalk.bold("  Description: "));
-    const author = await ask(chalk.bold("  Author: "));
-    const tagsInput = await ask(chalk.bold("  Tags (comma-separated): "));
-    rl.close();
+    if (opts.name && opts.description && opts.author) {
+      name = opts.name;
+      description = opts.description;
+      author = opts.author;
+      tags = opts.tags ? opts.tags.split(",").map((t: string) => t.trim()).filter(Boolean) : [];
+    } else {
+      const readline = await import("readline");
+      const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+      const ask = (q: string): Promise<string> =>
+        new Promise((res) => rl.question(q, res));
 
-    const tags = tagsInput
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean);
+      name = opts.name ?? await ask(chalk.bold("  Setup name: "));
+      description = opts.description ?? await ask(chalk.bold("  Description: "));
+      author = opts.author ?? await ask(chalk.bold("  Author: "));
+      const tagsInput = opts.tags ?? await ask(chalk.bold("  Tags (comma-separated): "));
+      rl.close();
+
+      tags = tagsInput.split(",").map((t: string) => t.trim()).filter(Boolean);
+    }
 
     const manifest = generateManifest(scan, { name, description, author, tags });
 
