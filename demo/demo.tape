@@ -3,7 +3,7 @@ Output demo/demo.gif
 Set Shell "bash"
 Set FontSize 15
 Set Width 960
-Set Height 600
+Set Height 750
 Set Padding 16
 Set Theme "Catppuccin Mocha"
 Set TypingSpeed 50ms
@@ -36,6 +36,6 @@ Sleep 800ms
 
 Type "claude-dotfiles show pjs7678/my-claude-dotfiles"
 Enter
-Sleep 5s
+Sleep 7s
 
-Sleep 1.5s
+Sleep 2s
